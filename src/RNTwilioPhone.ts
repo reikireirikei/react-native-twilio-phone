@@ -44,12 +44,12 @@ class RNTwilioPhone {
   static initialize(
     callKeepOptions: IOptions,
     fetchAccessToken: () => Promise<string>,
-    options = defaultOptions
+    options = defaultOptions,
   ) {
     const unsubscribeCallKeep = RNTwilioPhone.initializeCallKeep(
       callKeepOptions,
       fetchAccessToken,
-      options
+      options,
     );
 
     const unsubscribeRegisterAndroid = RNTwilioPhone.registerAndroid();
@@ -65,7 +65,7 @@ class RNTwilioPhone {
   static initializeCallKeep(
     callKeepOptions: IOptions,
     fetchAccessToken: () => Promise<string>,
-    options = defaultOptions
+    options = defaultOptions,
   ) {
     const { requestPermissionsOnInit } = options;
 
@@ -113,13 +113,8 @@ class RNTwilioPhone {
     });
   }
 
-  static async startCall(to: string, calleeName?: string, from?: string) {
+  static async startCall(to: string, params: ConnectParams, calleeName?: string) {
     const accessToken = await RNTwilioPhone.fetchAccessToken();
-    const params: ConnectParams = { to };
-
-    if (from) {
-      params.from = from;
-    }
 
     TwilioPhone.startCall(accessToken, params);
 
@@ -140,7 +135,8 @@ class RNTwilioPhone {
 
   private static registerAndroid() {
     if (Platform.OS !== 'android') {
-      return () => {};
+      return () => {
+      };
     }
 
     messaging()
@@ -150,7 +146,7 @@ class RNTwilioPhone {
 
     // Listen to whether the token changes
     const unsubscribeTokenRefresh = messaging().onTokenRefresh(
-      RNTwilioPhone.registerTwilioPhone
+      RNTwilioPhone.registerTwilioPhone,
     );
 
     const unsubscribeMessage = messaging().onMessage((remoteMessage) => {
@@ -167,12 +163,13 @@ class RNTwilioPhone {
 
   private static registerIOS() {
     if (Platform.OS !== 'ios') {
-      return () => {};
+      return () => {
+      };
     }
 
     VoipPushNotification.addEventListener(
       'register',
-      RNTwilioPhone.registerTwilioPhone
+      RNTwilioPhone.registerTwilioPhone,
     );
 
     VoipPushNotification.addEventListener(
@@ -180,7 +177,7 @@ class RNTwilioPhone {
       (notification: any) => {
         delete notification.aps;
         TwilioPhone.handleMessage(notification);
-      }
+      },
     );
 
     VoipPushNotification.registerVoipToken();
@@ -205,7 +202,7 @@ class RNTwilioPhone {
 
             RNCallKeep.displayIncomingCall(uuid, from);
           }
-        }
+        },
       ),
       twilioPhoneEmitter.addListener(
         EventType.CancelledCallInvite,
@@ -215,12 +212,12 @@ class RNTwilioPhone {
           if (uuid) {
             RNCallKeep.reportEndCallWithUUID(
               uuid,
-              CK_CONSTANTS.END_CALL_REASONS.MISSED
+              CK_CONSTANTS.END_CALL_REASONS.MISSED,
             );
 
             RNTwilioPhone.removeCall(uuid);
           }
-        }
+        },
       ),
       twilioPhoneEmitter.addListener(EventType.CallRinging, ({ callSid }) => {
         if (RNTwilioPhone.activeCall) {
@@ -245,12 +242,12 @@ class RNTwilioPhone {
           if (uuid) {
             RNCallKeep.reportEndCallWithUUID(
               uuid,
-              CK_CONSTANTS.END_CALL_REASONS.REMOTE_ENDED
+              CK_CONSTANTS.END_CALL_REASONS.REMOTE_ENDED,
             );
 
             RNTwilioPhone.removeCall(uuid);
           }
-        }
+        },
       ),
       twilioPhoneEmitter.addListener(
         EventType.CallDisconnectedError,
@@ -260,12 +257,12 @@ class RNTwilioPhone {
           if (uuid) {
             RNCallKeep.reportEndCallWithUUID(
               uuid,
-              CK_CONSTANTS.END_CALL_REASONS.FAILED
+              CK_CONSTANTS.END_CALL_REASONS.FAILED,
             );
 
             RNTwilioPhone.removeCall(uuid);
           }
-        }
+        },
       ),
     ];
 
@@ -284,7 +281,7 @@ class RNTwilioPhone {
         'didDisplayIncomingCall',
         ({ callUUID, payload }) => {
           RNTwilioPhone.addCall({ uuid: callUUID, sid: payload.twi_call_sid });
-        }
+        },
       );
 
       RNCallKeep.addEventListener('didResetProvider', () => {
@@ -331,7 +328,7 @@ class RNTwilioPhone {
         const sid = RNTwilioPhone.getCallSid(callUUID);
 
         sid && TwilioPhone.toggleMuteCall(sid, muted);
-      }
+      },
     );
 
     RNCallKeep.addEventListener(
@@ -340,7 +337,7 @@ class RNTwilioPhone {
         const sid = RNTwilioPhone.getCallSid(callUUID);
 
         sid && TwilioPhone.toggleHoldCall(sid, hold);
-      }
+      },
     );
 
     RNCallKeep.addEventListener(
@@ -349,7 +346,7 @@ class RNTwilioPhone {
         const sid = RNTwilioPhone.getCallSid(callUUID);
 
         sid && TwilioPhone.sendDigits(sid, digits);
-      }
+      },
     );
 
     return () => {
@@ -383,12 +380,12 @@ class RNTwilioPhone {
   }
 
   private static async registerTwilioPhone(deviceToken: string) {
-    try {
+    try{
       const accessToken = await RNTwilioPhone.fetchAccessToken();
 
       TwilioPhone.register(accessToken, deviceToken);
       RNTwilioPhone.deviceToken = deviceToken;
-    } catch (e) {
+    } catch (e){
       console.log(e);
     }
   }
