@@ -19,11 +19,6 @@ const identity = Platform.select({
   android: 'Larry',
 });
 
-const from = Platform.select({
-  ios: 'client:Steve',
-  android: 'client:Larry',
-});
-
 const callKeepOptions = {
   ios: {
     appName: 'TwilioPhone Example',
