@@ -100,7 +100,7 @@ export function App() {
     setCallInProgress(true);
 
     try {
-      await RNTwilioPhone.startCall(to, 'My friend', from);
+      await RNTwilioPhone.startCall(to, {} , 'My friend');
     } catch (e) {
       console.log(e);
       setCallInProgress(false);
