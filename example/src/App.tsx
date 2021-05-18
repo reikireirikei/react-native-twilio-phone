@@ -95,7 +95,7 @@ export function App() {
     setCallInProgress(true);
 
     try {
-      await RNTwilioPhone.startCall(to, { from: '' } , 'My friend');
+      await RNTwilioPhone.startCall(to, { from: '' });
     } catch (e) {
       console.log(e);
       setCallInProgress(false);
